@@ -1,0 +1,9 @@
+[package]
+name = "client"
+version = "0.1.0"
+authors = ["josephp27"]
+edition = "2020"
+
+[dependencies]
+scrap = "0.5"
+repng = "0.2.2"
