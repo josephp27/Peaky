@@ -2,7 +2,7 @@
 name = "client"
 version = "0.1.0"
 authors = ["josephp27"]
-edition = "2020"
+edition = "2018"
 
 [dependencies]
 scrap = "0.5"
