@@ -3,10 +3,14 @@ use std::net::UdpSocket;
 use std::thread;
 
 fn main() {
-    let mut buf = [0; 10];
+    let mut buf = [0; 1024];
 
-    let socket = UdpSocket::bind("127.0.0.1:34254").unwrap();
+    let addr = "0.0.0.0:8080";
+    println!("listening on: {}", addr);
+
+    let socket = UdpSocket::bind(addr).unwrap();
     let mut clients = HashSet::new();
+
     loop {
         match socket.recv_from(&mut buf) {
             Ok((amt, src)) => {
