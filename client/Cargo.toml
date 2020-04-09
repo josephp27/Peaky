@@ -5,5 +5,4 @@ authors = ["josephp27"]
 edition = "2018"
 
 [dependencies]
-scrap = "0.5"
-repng = "0.2.2"
+captrs = "0.3.0"
