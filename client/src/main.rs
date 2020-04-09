@@ -1,4 +1,4 @@
-extern crate scrap;
+extern crate captrs;
 
 use std::io::ErrorKind::WouldBlock;
 use std::io::Write;
@@ -8,9 +8,10 @@ use std::thread;
 use std::thread::sleep;
 use std::time::Duration;
 
-use scrap::{Capturer, Display};
+use captrs::{Bgr8, Capturer};
 
-fn display(socket: UdpSocket, w: usize, h: usize) {
+
+fn display(socket: UdpSocket, w: u32, h: u32) {
     let socket = UdpSocket::bind("0.0.0.0:8082").unwrap();
     let child = Command::new("ffplay")
         .args(&[
@@ -38,42 +39,26 @@ fn display(socket: UdpSocket, w: usize, h: usize) {
 }
 
 fn main() {
-    let d = Display::primary().unwrap();
-    let (w, h) = (d.width() / 2, d.height() / 2);
+    let mut capturer = Capturer::new(0).unwrap();
 
-    let mut capturer = Capturer::new(d).unwrap();
+    let (w, h) = capturer.geometry();
+    let size = w as u64 * h as u64;
 
-    let socket = UdpSocket::bind("0.0.0.0:8081").unwrap();
-    let cloned_socket = socket.try_clone().unwrap();
-    thread::spawn(move || display(socket.try_clone().unwrap(), w, h));
+    // let socket = UdpSocket::bind("0.0.0.0:8081").unwrap();
+    // let cloned_socket = socket.try_clone().unwrap();
+    // thread::spawn(move || display(socket.try_clone().unwrap(), w, h));
 
 
     loop {
-        match capturer.frame() {
-            Ok(frame) => {
-                // Write the frame, removing end-of-row padding.
-                let stride = frame.len() / h;
-                let rowlen = 4 * w;
+        let ps = capturer.capture_frame().unwrap();
 
-                let mut red = [0; 819200];
-                let mut j = 0;
-                for row in frame.chunks(stride) {
-                    for i in 0..rowlen {
-                        if i % 2 == 0 {
-                            red[j] = row[i];
-                            j += 1;
-                        }
-                    }
-                }
-                cloned_socket.send_to(&red[..819200 / 1000], "18.220.60.51:8080").unwrap();
-            }
-            Err(ref e) if e.kind() == WouldBlock => {
-                // Wait for the frame.
-            }
-            Err(_) => {
-                // We're done here.
-                break;
-            }
+        let mut a = Vec::new();
+        for Bgr8 { r, .. } in ps.into_iter() {
+            a.push(r)
         }
+
+        println!("{}", a.len());
+
+        // cloned_socket.send_to(&row[..4 * w], "18.220.60.51:8080").unwrap();
     }
 }
