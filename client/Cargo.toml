@@ -5,4 +5,3 @@ authors = ["josephp27"]
 edition = "2018"
 
 [dependencies]
-captrs = "0.3.0"
