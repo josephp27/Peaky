@@ -1,35 +1,45 @@
 use std::collections::HashSet;
-use std::net::UdpSocket;
+use std::net::SocketAddr;
 use std::thread;
 
-fn main() {
+use socket2::{Domain, Protocol, Socket, Type};
 
+const WIDTH: usize = 2560 / 8;
+const HEIGHT: usize = 1440 / 8;
+const BUFFER_SIZE: usize = WIDTH * HEIGHT;
+
+fn create_socket(addr: &str) -> Socket {
+    let socket = Socket::new(Domain::ipv4(), Type::dgram(), Option::from(Protocol::udp())).unwrap();
+    socket.bind(&addr.parse::<SocketAddr>().unwrap().into()).unwrap();
+    socket.set_send_buffer_size(BUFFER_SIZE * 2);
+    socket.set_recv_buffer_size(BUFFER_SIZE * 2);
+
+    socket
+}
+
+fn main() {
     let addr = "0.0.0.0:8080";
     println!("listening on: {}", addr);
 
-    let socket = UdpSocket::bind(addr).unwrap();
+    let socket = create_socket(addr);
     let mut clients = HashSet::new();
 
     loop {
-        let size = 8388608;
-        let mut buffer2: Box<[u8]> = vec![0; size].into_boxed_slice();
-        match socket.recv_from(&mut buffer2) {
-            Ok((amt, src)) => {
-                clients.insert(src);
+        let mut buffer = [0 as u8; BUFFER_SIZE];
 
-                println!("{:?}", clients);
-                for dest in clients.clone() {
-                    let cloned_socket = socket.try_clone().unwrap();
-                    let buffy = buffer2.clone();
-                    if src != dest {
-                        thread::spawn(move || {
-                            cloned_socket.send_to(&buffy[..amt], &dest).unwrap();
-                        });
-                    }
-                }
-            }
-            Err(e) => {
-                println!("Error: {}", e);
+        let (amt, src) = socket.recv_from(&mut buffer).unwrap();
+        clients.insert(src.as_inet().unwrap().to_string());
+
+        println!("{:?}", clients);
+        for dest in clients.clone() {
+            let cloned_socket = socket.try_clone().unwrap();
+            let cloned_buffer = buffer.clone();
+
+            if src.as_inet().unwrap().to_string() != dest.to_string() {
+                thread::spawn(move || {
+                    let addr = &dest.parse::<SocketAddr>().unwrap().into();
+                    cloned_socket.send_to(&cloned_buffer[..amt], addr).unwrap();
+                });
             }
         }
     }
