@@ -4,7 +4,7 @@ use std::str;
 use threadpool::ThreadPool;
 
 const BUFFER_SIZE: usize = 502;
-const NUM_THREADS: usize = 32;
+const NUM_THREADS: usize = 20;
 
 fn main() {
     const ADDRESS: &str = "0.0.0.0:8080";
@@ -19,9 +19,6 @@ fn main() {
             let mut buffer = [0 as u8; BUFFER_SIZE];
             loop {
                 let (_, src) = cloned.recv_from(&mut buffer).unwrap();
-                if str::from_utf8(&buffer).unwrap().contains("done") {
-                    println!("done");
-                }
                 cloned.send_to(&buffer, src).unwrap();
             }
         });
