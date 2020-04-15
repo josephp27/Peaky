@@ -1,46 +1,30 @@
-use std::collections::HashSet;
-use std::net::SocketAddr;
-use std::thread;
+use std::net::UdpSocket;
+use std::str;
 
-use socket2::{Domain, Protocol, Socket, Type};
+use threadpool::ThreadPool;
 
-const WIDTH: usize = 2560 / 8;
-const HEIGHT: usize = 1440 / 8;
-const BUFFER_SIZE: usize = WIDTH * HEIGHT;
-
-fn create_socket(addr: &str) -> Socket {
-    let socket = Socket::new(Domain::ipv4(), Type::dgram(), Option::from(Protocol::udp())).unwrap();
-    socket.bind(&addr.parse::<SocketAddr>().unwrap().into()).unwrap();
-    socket.set_send_buffer_size(BUFFER_SIZE * 2);
-    socket.set_recv_buffer_size(BUFFER_SIZE * 2);
-
-    socket
-}
+const BUFFER_SIZE: usize = 502;
+const NUM_THREADS: usize = 32;
 
 fn main() {
-    let addr = "0.0.0.0:8080";
-    println!("listening on: {}", addr);
+    const ADDRESS: &str = "0.0.0.0:8080";
+    println!("listening on: {}", ADDRESS);
 
-    let socket = create_socket(addr);
-    let mut clients = HashSet::new();
+    let socket: UdpSocket = UdpSocket::bind(ADDRESS).unwrap();
+    let pool = ThreadPool::new(NUM_THREADS);
 
-    loop {
-        let mut buffer = [0 as u8; BUFFER_SIZE];
-
-        let (amt, src) = socket.recv_from(&mut buffer).unwrap();
-        clients.insert(src.as_inet().unwrap().to_string());
-
-        println!("{:?}", clients);
-        for dest in clients.clone() {
-            let cloned_socket = socket.try_clone().unwrap();
-            let cloned_buffer = buffer.clone();
-
-            if src.as_inet().unwrap().to_string() != dest.to_string() {
-                thread::spawn(move || {
-                    let addr = &dest.parse::<SocketAddr>().unwrap().into();
-                    cloned_socket.send_to(&cloned_buffer[..amt], addr).unwrap();
-                });
+    for _ in 0..NUM_THREADS {
+        let cloned = socket.try_clone().unwrap();
+        pool.execute(move || {
+            let mut buffer = [0 as u8; BUFFER_SIZE];
+            loop {
+                let (_, src) = cloned.recv_from(&mut buffer).unwrap();
+                if str::from_utf8(&buffer).unwrap().contains("done") {
+                    println!("done");
+                }
+                cloned.send_to(&buffer, src).unwrap();
             }
-        }
+        });
     }
+    pool.join();
 }
