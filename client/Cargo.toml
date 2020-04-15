@@ -6,3 +6,4 @@ edition = "2018"
 
 [dependencies]
 threadpool = "1.7.1"
+scrap = "0.5"
