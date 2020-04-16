@@ -1,8 +1,5 @@
-extern crate priority_queue;
-
 use std::cmp::min;
 use std::cmp::Reverse;
-use std::collections::BinaryHeap;
 use std::convert::TryInto;
 use std::io::Write;
 use std::net::UdpSocket;
@@ -12,7 +9,7 @@ use std::sync::{Arc, Mutex};
 use std::thread::sleep;
 use std::time::Duration;
 
-use priority_queue::PriorityQueue;
+use binary_heap_plus::*;
 use scrap::{Capturer, Display};
 use threadpool::ThreadPool;
 
@@ -26,7 +23,8 @@ fn pop(barry: &[u8]) -> [u8; 4] {
 }
 
 fn display(socket: UdpSocket) -> ThreadPool {
-    let frame = Arc::new(Mutex::new(BinaryHeap::new()));
+    let k = KeyComparator(|k: &(u32, Vec<u8>)| Reverse(k.0));
+    let frame = Arc::new(Mutex::new(BinaryHeap::from_vec_cmp(vec![], k)));
     let pool = ThreadPool::new(NUM_THREADS + 1);
 
     for _ in 0..NUM_THREADS {
@@ -44,7 +42,7 @@ fn display(socket: UdpSocket) -> ThreadPool {
                 // println!("{}", packet_num);
 
                 let mut guard = frame.lock().unwrap();
-                guard.push((data, Reverse(packet_num)));
+                guard.push((packet_num, data));
                 // println!("{} {}", packet_num, guard.len());
             }
         });
@@ -66,14 +64,13 @@ fn display(socket: UdpSocket) -> ThreadPool {
 
         let mut out = child.stdin.unwrap();
         loop {
-            // println!("{}", frame.lock().unwrap().len());
-            if frame.lock().unwrap().len() >= 8100 {
-                let mut a = frame.lock().unwrap();
-                for _ in 0..8100 {
-                    let (buf, num) = a.pop().unwrap();
-                    out.write_all(&buf);
+            sleep(Duration::from_millis(1000));
+            let mut guard1 = frame.lock().unwrap();
+            // if guard1.len() > 5000 {
+                for i in 0..guard1.len() {
+                    out.write_all(&guard1.pop().unwrap().1);
                 }
-            }
+            // }
         }
     });
 
@@ -84,7 +81,7 @@ fn main() {
     let socket = UdpSocket::bind("0.0.0.0:8081").unwrap();
     let cloned_socket = socket.try_clone().unwrap();
 
-    // display(socket);
+    display(socket);
 
     let d = Display::primary().unwrap();
     let mut capturer = Capturer::new(d).unwrap();
@@ -101,9 +98,9 @@ fn main() {
 
                 cloned_socket.send_to(&buffer, DESTINATION).unwrap();
 
-                out.write_all(&data);
                 packet_sequence += 1;
             }
+            sleep(Duration::from_millis(20000));
         }
     }
 }

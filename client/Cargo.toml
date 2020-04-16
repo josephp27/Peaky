@@ -7,4 +7,4 @@ edition = "2018"
 [dependencies]
 threadpool = "1.7.1"
 scrap = "0.5"
-priority-queue = "0.7.0"
+binary-heap-plus = "0.2.0"
