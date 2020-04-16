@@ -1,8 +1,18 @@
-use std::cmp::min;
-use std::convert::TryInto;
-use std::net::UdpSocket;
-use std::str;
+extern crate priority_queue;
 
+use std::cmp::min;
+use std::cmp::Reverse;
+use std::collections::BinaryHeap;
+use std::convert::TryInto;
+use std::io::Write;
+use std::net::UdpSocket;
+use std::process::{Command, Stdio};
+use std::str;
+use std::sync::{Arc, Mutex};
+use std::thread::sleep;
+use std::time::Duration;
+
+use priority_queue::PriorityQueue;
 use scrap::{Capturer, Display};
 use threadpool::ThreadPool;
 
@@ -16,52 +26,56 @@ fn pop(barry: &[u8]) -> [u8; 4] {
 }
 
 fn display(socket: UdpSocket) -> ThreadPool {
-    let frame = Box::new(vec![vec![]; 8192]);
+    let frame = Arc::new(Mutex::new(BinaryHeap::new()));
     let pool = ThreadPool::new(NUM_THREADS + 1);
 
     for _ in 0..NUM_THREADS {
         let socket = socket.try_clone().unwrap();
-        let mut new_ = (*frame).clone();
+        let frame = frame.clone();
 
         pool.execute(move || {
             let mut a = vec![0 as u8; BUFFER_SIZE + 4];
             loop {
                 let (_, _) = socket.recv_from(&mut a).unwrap();
-                let packet_num = u32::from_be_bytes(pop(&a[..4]));
-                let x = &a[4..BUFFER_SIZE + 4];
 
-                // let x = &mut a[4..];
-                new_.insert(packet_num as usize, a[4..].to_vec());
-                println!("{:?} {:?}", packet_num, new_[packet_num as usize]);
+                let packet_num = u32::from_be_bytes(pop(&a[..4]));
+                let data = a[4..].to_vec();
+
+                // println!("{}", packet_num);
+
+                let mut guard = frame.lock().unwrap();
+                guard.push((data, Reverse(packet_num)));
+                // println!("{} {}", packet_num, guard.len());
             }
         });
     }
 
-    // pool.execute(move || {
-    //     let child = Command::new("ffplay")
-    //         .args(&[
-    //             "-f", "rawvideo",
-    //             "-alwaysontop",
-    //             "-pixel_format", "bgr0",
-    //             "-video_size", &format!("{}x{}", 1280, 800),
-    //             "-framerate", "60",
-    //             "-"
-    //         ])
-    //         .stdin(Stdio::piped())
-    //         .spawn()
-    //         .expect("This example requires ffplay.");
-    //
-    //     let mut out = child.stdin.unwrap();
-    //     loop {
-    //         //pqueue if next value is within std deviation then pull from queue or wait for a done signal?
-    //         match frame.lock().unwrap().pop_back() {
-    //             Some(val) => {
-    //                 out.write_all(&val);
-    //             }
-    //             _ => {}
-    //         }
-    //     }
-    // });
+    pool.execute(move || {
+        let child = Command::new("ffplay")
+            .args(&[
+                "-f", "rawvideo",
+                "-alwaysontop",
+                "-pixel_format", "bgr0",
+                "-video_size", &format!("{}x{}", 1280, 800),
+                "-framerate", "60",
+                "-"
+            ])
+            .stdin(Stdio::piped())
+            .spawn()
+            .expect("This example requires ffplay.");
+
+        let mut out = child.stdin.unwrap();
+        loop {
+            // println!("{}", frame.lock().unwrap().len());
+            if frame.lock().unwrap().len() >= 8100 {
+                let mut a = frame.lock().unwrap();
+                for _ in 0..8100 {
+                    let (buf, num) = a.pop().unwrap();
+                    out.write_all(&buf);
+                }
+            }
+        }
+    });
 
     pool
 }
@@ -70,7 +84,7 @@ fn main() {
     let socket = UdpSocket::bind("0.0.0.0:8081").unwrap();
     let cloned_socket = socket.try_clone().unwrap();
 
-    display(socket);
+    // display(socket);
 
     let d = Display::primary().unwrap();
     let mut capturer = Capturer::new(d).unwrap();
@@ -87,10 +101,9 @@ fn main() {
 
                 cloned_socket.send_to(&buffer, DESTINATION).unwrap();
 
+                out.write_all(&data);
                 packet_sequence += 1;
             }
-            break;
         }
     }
-    loop {}
 }
