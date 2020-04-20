@@ -6,16 +6,16 @@ use std::net::UdpSocket;
 use std::process::{Command, Stdio};
 use std::str;
 use std::sync::{Arc, Mutex};
-use std::thread::sleep;
 use std::time::Duration;
 
 use binary_heap_plus::*;
 use scrap::{Capturer, Display};
 use threadpool::ThreadPool;
+use std::thread::sleep;
 
 const BUFFER_SIZE: usize = 502;
 // const DESTINATION: &str = "18.188.172.124:8080";
-const DESTINATION: &str = "0.0.0.0:8080";
+const DESTINATION: &str = "127.0.0.1:8080";
 const NUM_THREADS: usize = 10;
 
 fn pop(barry: &[u8]) -> [u8; 4] {
@@ -37,9 +37,12 @@ fn display(socket: UdpSocket) -> ThreadPool {
         let child = Command::new("ffplay")
             .args(&[
                 "-f", "rawvideo",
-                "-alwaysontop",
+                // "-alwaysontop",
+                "-fflags", "nobuffer",
                 "-pixel_format", "bgr0",
-                "-video_size", &format!("{}x{}", 1280, 800),
+                "-video_size", &format!("{}x{}", 2560, 1440),
+                "-x", &format!("{}", 2560/4),
+                "-y", &format!("{}", 1440/4),
                 "-framerate", "60",
                 "-"
             ])
@@ -48,7 +51,6 @@ fn display(socket: UdpSocket) -> ThreadPool {
             .expect("This example requires ffplay.");
 
         let mut out = child.stdin.unwrap();
-        sleep(Duration::from_millis(100));
         loop {
             if *curr_queue_display.lock().unwrap() == 1 {
                 let mut guard1 = frame_display.lock().unwrap();
@@ -98,7 +100,7 @@ fn display(socket: UdpSocket) -> ThreadPool {
 }
 
 fn main() {
-    let socket = UdpSocket::bind("0.0.0.0:8081").unwrap();
+    let socket = UdpSocket::bind("127.0.0.1:2222").unwrap();
     let cloned_socket = socket.try_clone().unwrap();
 
     display(socket);
@@ -107,23 +109,24 @@ fn main() {
     let mut capturer = Capturer::new(d).unwrap();
 
     let mut queue_num: u8 = 0;
+
     loop {
         if let Ok(frame) = capturer.frame() {
             let mut packet_sequence: u32 = 0;
-            println!("{}", frame.len());
             for i in (0..frame.len()).step_by(BUFFER_SIZE) {
                 let end = i + min(BUFFER_SIZE, frame.len() - i);
 
                 let mut buffer = packet_sequence.to_be_bytes().to_vec();
+
                 let data: &[u8] = &frame[i..end];
+
                 buffer.append(&mut vec![queue_num]);
                 buffer.append(&mut data.to_vec());
 
-                // cloned_socket.send_to(&buffer, DESTINATION).unwrap();
+                cloned_socket.send_to(&buffer, DESTINATION).unwrap();
 
                 packet_sequence += 1;
             }
-            sleep(Duration::from_millis(3000));
             queue_num ^= 1;
         }
     }
