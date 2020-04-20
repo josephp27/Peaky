@@ -6,14 +6,14 @@ use std::net::UdpSocket;
 use std::process::{Command, Stdio};
 use std::str;
 use std::sync::{Arc, Mutex};
+use std::thread::sleep;
 use std::time::Duration;
 
 use binary_heap_plus::*;
 use scrap::{Capturer, Display};
 use threadpool::ThreadPool;
-use std::thread::sleep;
 
-const BUFFER_SIZE: usize = 502;
+const BUFFER_SIZE: usize = 7200;
 // const DESTINATION: &str = "18.188.172.124:8080";
 const DESTINATION: &str = "127.0.0.1:8080";
 const NUM_THREADS: usize = 10;
@@ -41,9 +41,9 @@ fn display(socket: UdpSocket) -> ThreadPool {
                 "-fflags", "nobuffer",
                 "-pixel_format", "bgr0",
                 "-video_size", &format!("{}x{}", 2560, 1440),
-                "-x", &format!("{}", 2560/4),
-                "-y", &format!("{}", 1440/4),
-                "-framerate", "60",
+                "-x", &format!("{}", 2560 / 4),
+                "-y", &format!("{}", 1440 / 4),
+                // "-framerate", "60",
                 "-"
             ])
             .stdin(Stdio::piped())
@@ -55,6 +55,7 @@ fn display(socket: UdpSocket) -> ThreadPool {
             if *curr_queue_display.lock().unwrap() == 1 {
                 let mut guard1 = frame_display.lock().unwrap();
                 let len = guard1.len();
+
                 for _ in 0..len {
                     out.write_all(&guard1.pop().unwrap().1).unwrap();
                 }
@@ -100,7 +101,7 @@ fn display(socket: UdpSocket) -> ThreadPool {
 }
 
 fn main() {
-    let socket = UdpSocket::bind("127.0.0.1:2222").unwrap();
+    let socket = UdpSocket::bind("127.0.0.1:7777").unwrap();
     let cloned_socket = socket.try_clone().unwrap();
 
     display(socket);
@@ -127,6 +128,7 @@ fn main() {
 
                 packet_sequence += 1;
             }
+            sleep(Duration::from_millis(100));
             queue_num ^= 1;
         }
     }

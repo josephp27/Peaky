@@ -3,7 +3,7 @@ use std::str;
 
 use threadpool::ThreadPool;
 
-const BUFFER_SIZE: usize = 2048;
+const BUFFER_SIZE: usize = 7500;
 const NUM_THREADS: usize = 20;
 
 fn main() {
