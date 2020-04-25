@@ -1,19 +1,15 @@
 use std::cmp::Reverse;
+use std::io::Write;
 use std::net::UdpSocket;
+use std::process::{Command, Stdio};
 use std::sync::{Arc, Mutex};
 
 use binary_heap_plus::{BinaryHeap, KeyComparator};
 use threadpool::ThreadPool;
-use std::process::{Command, Stdio};
-use std::convert::TryInto;
-use std::io::Write;
 
+use crate::utils::helper;
 
 const NUM_THREADS: usize = 10;
-
-fn pop(barry: &[u8]) -> [u8; 4] {
-    barry.try_into().expect("")
-}
 
 pub fn display(socket: UdpSocket, buffer_size: usize) -> ThreadPool {
     let k = KeyComparator(|k: &(u32, Vec<u8>)| Reverse(k.0));
@@ -73,7 +69,7 @@ pub fn display(socket: UdpSocket, buffer_size: usize) -> ThreadPool {
             loop {
                 let (_, _) = socket.recv_from(&mut a).unwrap();
 
-                let packet_num = u32::from_be_bytes(pop(&a[..4]));
+                let packet_num = helper::get_packet_num(&a[..4]);
                 let queue_num = a[4];
                 let data = a[5..].to_vec();
                 *curr_queue.lock().unwrap() = queue_num;

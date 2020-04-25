@@ -5,6 +5,7 @@ use scrap::Display;
 
 mod display;
 mod capture;
+mod utils;
 
 const BUFFER_SIZE: usize = 7200;
 const DESTINATION: &str = "127.0.0.1:8080";
