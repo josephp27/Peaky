@@ -14,12 +14,22 @@ use scrap::{Capturer, Display};
 use threadpool::ThreadPool;
 
 const DESTINATION: &str = "3.14.82.97:8080";
-const LAPTOP: &str = "45.19.26.246:8081";
+const LAPTOP: &str = "45.19.26.246:49152";
 
 fn main() {
-    let socket = UdpSocket::bind("0.0.0.0:8090").unwrap();
+    let socket = UdpSocket::bind("0.0.0.0:7000").unwrap();
     socket.send_to(&[], DESTINATION).unwrap();
-    socket.send_to(&[], LAPTOP).unwrap();
+    let mut buf = [0 as u8; 32];
+    let (_, src) = socket.recv_from(&mut buf).unwrap();
+    println!("{:?}, {:?}", buf, src);
+
+    let cloned = socket.try_clone().unwrap();
+    thread::spawn(move || {
+        loop {
+            cloned.send_to(&[], LAPTOP).unwrap();
+        }
+    });
+
 
     loop {
         let mut buf = [0 as u8; 32];
