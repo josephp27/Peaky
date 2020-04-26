@@ -3,7 +3,7 @@ use std::str;
 
 use threadpool::ThreadPool;
 
-const BUFFER_SIZE: usize = 504;
+const BUFFER_SIZE: usize = 2048;
 const NUM_THREADS: usize = 20;
 
 fn main() {
@@ -18,8 +18,8 @@ fn main() {
         pool.execute(move || {
             let mut buffer = [0 as u8; BUFFER_SIZE];
             loop {
-                let (_, src) = cloned.recv_from(&mut buffer).unwrap();
-                cloned.send_to(&buffer, src).unwrap();
+                let (amt, src) = cloned.recv_from(&mut buffer).unwrap();
+                cloned.send_to(&buffer[..amt], src).unwrap();
             }
         });
     }
