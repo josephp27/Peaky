@@ -6,15 +6,17 @@ use std::time::Duration;
 
 use scrap::{Capturer, Display};
 
-pub fn capture(primary_display: Display, socket: UdpSocket, buffer_size: usize, destination: &str) {
+use crate::utils::constants::{BUFFER_SIZE, DESTINATION};
+
+pub fn capture(primary_display: Display, socket: UdpSocket) {
     let mut queue_num = 0;
     let mut capturer = Capturer::new(primary_display).unwrap();
 
     loop {
         if let Ok(frame) = capturer.frame() {
             let mut packet_sequence: u32 = 0;
-            for i in (0..frame.len()).step_by(buffer_size) {
-                let end = i + min(buffer_size, frame.len() - i);
+            for i in (0..frame.len()).step_by(BUFFER_SIZE) {
+                let end = i + min(BUFFER_SIZE, frame.len() - i);
 
                 let mut buffer = packet_sequence.to_be_bytes().to_vec();
 
@@ -23,7 +25,7 @@ pub fn capture(primary_display: Display, socket: UdpSocket, buffer_size: usize, 
                 buffer.append(&mut vec![queue_num]);
                 buffer.append(&mut data.to_vec());
 
-                socket.send_to(&buffer, destination).unwrap();
+                socket.send_to(&buffer, DESTINATION).unwrap();
 
                 packet_sequence += 1;
             }
