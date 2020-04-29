@@ -7,7 +7,7 @@ use std::sync::{Arc, Mutex};
 use binary_heap_plus::{BinaryHeap, KeyComparator};
 use threadpool::ThreadPool;
 
-use crate::utils::constants::{BUFFER_SIZE, PACKET_NUM_SIZE};
+use crate::utils::constants::{BUFFER_SIZE, PACKET_NUM_SIZE, QUEUE_NUM_SIZE};
 use crate::utils::helper;
 
 const NUM_THREADS: usize = 10;
@@ -66,7 +66,7 @@ pub fn display(socket: UdpSocket) -> ThreadPool {
         let curr_queue = curr_queue.clone();
 
         pool.execute(move || {
-            let mut a = vec![0 as u8; BUFFER_SIZE + 5];
+            let mut a = vec![0 as u8; BUFFER_SIZE + PACKET_NUM_SIZE + QUEUE_NUM_SIZE];
             loop {
                 let (_, _) = socket.recv_from(&mut a).unwrap();
 

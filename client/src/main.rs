@@ -1,9 +1,8 @@
 use std::net::UdpSocket;
-use std::str;
 
 use scrap::Display;
 
-use crate::utils::constants::{BUFFER_SIZE, DESTINATION, RECEIVER};
+use crate::utils::constants::RECEIVER;
 
 mod display;
 mod capture;
