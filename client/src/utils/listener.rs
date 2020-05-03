@@ -2,7 +2,7 @@ use crate::utils::constants::{BUFFER_SIZE, PACKET_NUM_SIZE, QUEUE_NUM_SIZE};
 use crate::utils::helper;
 use std::net::UdpSocket;
 
-pub fn marshal(socket: UdpSocket) {
+pub fn listen(socket: UdpSocket) {
     let mut a = vec![0 as u8; BUFFER_SIZE + PACKET_NUM_SIZE + QUEUE_NUM_SIZE];
     loop {
         let (_, _) = socket.recv_from(&mut a).unwrap();
