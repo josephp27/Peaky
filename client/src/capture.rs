@@ -5,7 +5,7 @@ use crate::utils::constants::{BUFFER_SIZE, DESTINATION};
 use crate::utils::helper::{build_buffer, calculate_frame_end};
 use std::net::UdpSocket;
 
-pub fn capture(primary_display: Display, socket: UdpSocket) {
+pub fn capture_orchestrator(primary_display: Display, socket: UdpSocket) {
     let mut queue_num = 0;
     let mut capturer = Capturer::new(primary_display).unwrap();
 
