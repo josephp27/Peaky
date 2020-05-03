@@ -1,12 +1,9 @@
-use std::iter::Iterator;
-use std::net::UdpSocket;
-use std::thread::sleep;
-use std::time::Duration;
 
 use scrap::{Capturer, Display};
 
 use crate::utils::constants::{BUFFER_SIZE, DESTINATION};
 use crate::utils::helper::{build_buffer, calculate_frame_end};
+use std::net::UdpSocket;
 
 pub fn capture(primary_display: Display, socket: UdpSocket) {
     let mut queue_num = 0;
@@ -22,8 +19,6 @@ pub fn capture(primary_display: Display, socket: UdpSocket) {
                 socket.send_to(&buffer, DESTINATION).unwrap();
                 packet_sequence += 1;
             }
-            sleep(Duration::from_millis(100));
-            queue_num ^= 1;
         }
     }
 }
