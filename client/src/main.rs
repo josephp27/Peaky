@@ -19,5 +19,5 @@ fn main() {
                                  primary_display.height(), None);
 
     display::display_orchestrator(socket, settings);
-    capture::capture(primary_display, cloned_socket);
+    capture::capture_orchestrator(primary_display, cloned_socket);
 }
