@@ -23,7 +23,7 @@ pub fn get_canvas(w: usize, h: usize, scalar: usize) -> ChildStdin {
     Command::new("ffplay")
         .args(&[
             "-f", "rawvideo",
-            // "-alwaysontop",
+            "-alwaysontop",
             "-fflags", "nobuffer",
             "-pixel_format", "bgr0",
             "-video_size", &format!("{}x{}", w, h),
