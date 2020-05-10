@@ -11,13 +11,13 @@ mod utils;
 
 
 fn main() {
-    let socket = UdpSocket::bind(RECEIVER).unwrap();
-    let cloned_socket = socket.try_clone().unwrap();
+    // let socket = UdpSocket::bind(RECEIVER).unwrap();
+    // let cloned_socket = socket.try_clone().unwrap();
 
     let primary_display = Display::primary().unwrap();
     let settings = Settings::new(primary_display.width(),
                                  primary_display.height(), None);
 
-    display::display_orchestrator(socket, settings);
-    capture::capture_orchestrator(primary_display, cloned_socket);
+    // display::display_orchestrator(socket, settings);
+    capture::capture_orchestrator(primary_display, settings);
 }
