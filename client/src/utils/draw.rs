@@ -9,18 +9,16 @@ use crate::utils::settings::Settings;
 pub fn draw(settings: Settings, rx: Receiver<Vec<u8>>) {
     let mut canvas = get_canvas(settings.width, settings.height, settings.scalar);
 
-    let mut buffer: Vec<Vec<u8>> = vec![vec![0; BUFFER_SIZE]; 1116];
+    let mut buffer: Vec<u8> = vec![0; 8028160];
     loop {
         let data = rx.recv().unwrap();
 
         if data.len() == 4 {
-            for packet in buffer.clone() {
-                canvas.write_all(&packet);
-            }
+            canvas.write_all(&buffer);
         } else {
-            let index = helper::get_packet_num(&data[..4]);
+            let index = BUFFER_SIZE * helper::get_packet_num(&data[..4]);
             let mut vec1 = data[4..].to_vec();
-            buffer[index] = vec1;
+            buffer.splice(index..index + vec1.len(), vec1);
         }
     }
 }
