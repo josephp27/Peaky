@@ -10,6 +10,8 @@ TODO:
 Codec - H.264
 
 Display as small overlay on screen - DirectX?
+
+Upgrading connection to P2P via UDP Hole Punching - hard time with NAT
 ```
 
 https://io7m.com/documents/udp-reliable/#ordering
