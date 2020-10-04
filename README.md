@@ -1,4 +1,4 @@
-# Peaky
+# Peak
 Screen peak your teammates
 
 Uses sockets and UDP network calls to stream video between you and your teammates using minimal libraries, written in pure Rust
