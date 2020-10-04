@@ -1,5 +1,6 @@
-# Peak
-Screen peak your teammates
+# Peak | Screen Peak Your Teammates
+
+The goal for this project is to write everything from scratch, using no outside libraries
 
 Uses sockets and UDP network calls to stream video between you and your teammates using minimal libraries, written in pure Rust
 
