@@ -8,7 +8,7 @@ Since we should always have the fastest stream, dropping packets is more than ok
 ### TODO
 - [X] Record screen
 - [X] Number packets
-- [X] Reorer packets on client side
+- [X] Reorder packets on client side
 - [X] Stream video
 - [ ] Codec - H.264
 - [ ] Display as small overlay on screen - DirectX?
