@@ -9,15 +9,13 @@ use std::time::{Duration, Instant};
 use rand::Rng;
 use scrap::{Capturer, Display};
 
-use crate::utils::constants::{BUFFER_SIZE, DESTINATION};
+use crate::utils::constants::{BUFFER_SIZE, DESTINATION, FRAME_MAX_RUNTIME};
 use crate::utils::draw::draw;
 use crate::utils::helper::{build_buffer, calculate_frame_end};
 use crate::utils::settings::Settings;
 
 pub fn capture_orchestrator(primary_display: Display, socket: UdpSocket) {
     let mut capturer = Capturer::new(primary_display).unwrap();
-    let frame_max_runtime = 1. / 25.;
-
 
     loop {
         let start = Instant::now();
@@ -34,7 +32,7 @@ pub fn capture_orchestrator(primary_display: Display, socket: UdpSocket) {
             }
         }
 
-        let time_left = frame_max_runtime - (start.elapsed().as_millis() as f64);
+        let time_left = FRAME_MAX_RUNTIME - (start.elapsed().as_millis() as f64);
         let duration = time_left.max(0.);
         thread::sleep(Duration::from_millis((duration * 1000.) as u64));
     }
