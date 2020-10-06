@@ -13,7 +13,7 @@ Since we should always have the fastest stream, dropping packets is more than ok
     - [X] Reorder packets on client side
     - [ ] Drop packets part of previous frame
 - [X] Stream video
-- [ ] Limit Frame rate
+- [X] Limit Frame rate
     - [X] Sender
     - [X] Receiver
 - [ ] Codec - H.264
