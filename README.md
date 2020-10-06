@@ -14,8 +14,8 @@ Since we should always have the fastest stream, dropping packets is more than ok
     - [ ] Drop packets part of previous frame
 - [X] Stream video
 - [ ] Limit Frame rate
-    - [ ] Sender
-    - [ ] Receiver
+    - [X] Sender
+    - [X] Receiver
 - [ ] Codec - H.264
 - [ ] Display as small overlay on screen - DirectX?
 - [ ] Upgrading connection to P2P via UDP Hole Punching - hard time with NAT
