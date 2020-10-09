@@ -1,4 +1,4 @@
-# Peak | Screen Peak Your Teammates
+# Peak | Screen Peak Your Teammates [![HitCount](http://hits.dwyl.com/josephp27/Peak.svg)](http://hits.dwyl.com/josephp27/Peak)
 
 The goal for this project is to write everything from scratch, using no outside libraries
 
@@ -23,4 +23,4 @@ Since we should always have the fastest stream, dropping packets is more than ok
 
 https://io7m.com/documents/udp-reliable/#ordering
 
-[![HitCount](http://hits.dwyl.com/josephp27/Peak.svg)](http://hits.dwyl.com/josephp27/Peak)
+
