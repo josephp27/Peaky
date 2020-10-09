@@ -22,3 +22,5 @@ Since we should always have the fastest stream, dropping packets is more than ok
 
 
 https://io7m.com/documents/udp-reliable/#ordering
+
+[![HitCount](http://hits.dwyl.com/josephp27/Peak.svg)](http://hits.dwyl.com/josephp27/Peak)
