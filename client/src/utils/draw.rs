@@ -10,7 +10,7 @@ use crate::utils::settings::Settings;
 
 pub fn draw(settings: Settings, rx: Receiver<Vec<u8>>) {
     let mut canvas = get_canvas(settings.width, settings.height, settings.scalar);
-    let mut start = Instant::now();
+    let mut scan_index = 0;
 
     let mut buffer: Vec<Vec<u8>> = vec![vec![0; BUFFER_SIZE]; 1116];
     loop {
@@ -20,12 +20,8 @@ pub fn draw(settings: Settings, rx: Receiver<Vec<u8>>) {
         let mut vec1 = data[4..].to_vec();
         buffer[index] = vec1;
 
-        let time_left = FRAME_MAX_RUNTIME - (start.elapsed().as_millis() as f64);
-        if time_left >= 0. {
-            for packet in buffer.clone() {
-                canvas.write_all(&packet);
-            }
-            start = Instant::now();
-        }
+        canvas.write(&buffer[scan_index % buffer.len()]);
+
+        scan_index += 1;
     }
 }

@@ -29,7 +29,7 @@ pub fn get_canvas(w: usize, h: usize, scalar: usize) -> ChildStdin {
             "-video_size", &format!("{}x{}", w, h),
             "-x", &format!("{}", w / scalar),
             "-y", &format!("{}", h / scalar),
-            // "-framerate", "60",
+            "-framerate", "60",
             "-"
         ])
         .stdin(Stdio::piped())

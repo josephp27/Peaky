@@ -7,7 +7,7 @@ const BUFFER_SIZE: usize = 7500;
 const NUM_THREADS: usize = 20;
 
 fn main() {
-    const ADDRESS: &str = "127.0.0.1:8080";
+    const ADDRESS: &str = "0.0.0.0:8080";
     println!("listening on: {}", ADDRESS);
 
     let socket: UdpSocket = UdpSocket::bind(ADDRESS).unwrap();
