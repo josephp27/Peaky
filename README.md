@@ -8,7 +8,7 @@ Since we should always have the fastest stream, dropping packets is more than ok
 
 ### TODO
 - [X] Record screen
-- [X] Unreliable Packet Sequencing
+- [X] [Unreliable Packet Sequencing](https://io7m.com/documents/udp-reliable/#ordering)
     - [X] Number packets
     - [X] Reorder packets on client side
     - [ ] Drop packets part of previous frame
@@ -25,6 +25,6 @@ Since we should always have the fastest stream, dropping packets is more than ok
 ### Issues
 Currently frames are about 8mb each, at 60 fps would require about 4GB/s internet - which is unfeasible. Therefore compression and resizing needs to be implemented
 
-https://io7m.com/documents/udp-reliable/#ordering
+
 
 
