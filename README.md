@@ -8,7 +8,7 @@ Since we should always have the fastest stream, dropping packets is more than ok
 
 ### TODO
 - [X] Record screen
-- [X] [Unreliable Packet Sequencing](https://io7m.com/documents/udp-reliable/#ordering)
+- [X] [UDP - Unreliable Packet Sequencing](https://io7m.com/documents/udp-reliable/#ordering)
     - [X] Number packets
     - [X] Reorder packets on client side
     - [ ] Drop packets part of previous frame
