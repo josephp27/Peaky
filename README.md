@@ -1,8 +1,8 @@
 # Peak | Screen Peak Your Teammates [![HitCount](http://hits.dwyl.com/josephp27/Peak.svg)](http://hits.dwyl.com/josephp27/Peak)
 
-The goal for this project is to write everything from scratch, using no outside libraries
+Simiilar to how Discord overlays chat over gameplay, I am setting out to write a tool to stream video over the game window, so teammates can see your screen. Think whenever youi screen peaked as a kid, but over the internet. 
 
-Uses sockets and UDP network calls to stream video between you and your teammates using minimal libraries, written in pure Rust
+The goal for this project is to write everything from scratch, using no outside libraries. Uses sockets and UDP network calls to stream video between you and your teammates using minimal libraries, written in pure Rust
 
 Since we should always have the fastest stream, dropping packets is more than ok. Packet ordering happens in O(1) time inserts, for O(n) runtime, where n is the number of packets in a frame
 
