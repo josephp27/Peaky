@@ -17,9 +17,13 @@ Since we should always have the fastest stream, dropping packets is more than ok
     - [X] Sender
     - [X] Receiver
 - [ ] Codec - H.264
+- [ ] Resize screen capture
 - [ ] Display as small overlay on screen - DirectX?
 - [ ] Upgrading connection to P2P via UDP Hole Punching - hard time with NAT
 
+
+### Issues
+Currently frames are about 8mb each, at 60 fps would require about 4GB/s internet - which is unfeasible. Therefore compression and resizing needs to be implemented
 
 https://io7m.com/documents/udp-reliable/#ordering
 
