@@ -20,6 +20,7 @@ Since we should always have the fastest stream, dropping packets is more than ok
 - [ ] Resize screen capture
 - [ ] Display as small overlay on screen - DirectX?
 - [ ] Upgrading connection to P2P via UDP Hole Punching - hard time with NAT
+- [ ] Cleanup dependencies
 
 
 ### Issues
