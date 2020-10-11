@@ -12,7 +12,8 @@ pub fn draw(settings: Settings, rx: Receiver<Vec<u8>>) {
     let mut canvas = get_canvas(settings.width, settings.height, settings.scalar);
     let mut scan_index = 0;
 
-    let mut buffer: Vec<Vec<u8>> = vec![vec![0; BUFFER_SIZE]; 1116];
+    let size = 8028160 / BUFFER_SIZE;
+    let mut buffer: Vec<Vec<u8>> = vec![vec![0; BUFFER_SIZE]; size];
     loop {
         let data = rx.recv().unwrap();
 
