@@ -1,4 +1,4 @@
-# Peak | Screen Peak Your Teammates [![HitCount](http://hits.dwyl.com/josephp27/Peak.svg)](http://hits.dwyl.com/josephp27/Peak)
+# Peak | Screen Peak Your Teammates
 
 Similar to how Discord overlays chat over gameplay, I am setting out to write a tool to stream video over the game window, so teammates can see your screen. Think whenever you screen peaked as a kid to gain advantage over a friend or another team, but over the internet. 
 
