@@ -34,7 +34,7 @@ cargo run client/src/main.rs
     - [X] Receiver
 - [ ] Codec - H.264
 - [ ] Resize screen capture
-- [ ] Display as small overlay on screen - DirectX?
+- [ ] Display as small overlay on screen - DirectX? https://www.youtube.com/watch?v=7QDkceeykbI
 - [ ] Upgrading connection to P2P via UDP Hole Punching - hard time with NAT
 - [ ] Cleanup dependencies
 
