@@ -2,7 +2,7 @@
 
 Similar to how Discord overlays chat over gameplay, I am setting out to write a tool to stream video over the game window, so teammates can see your screen. Think whenever you screen peaked as a kid to gain advantage over a friend or another team, but over the internet. 
 
-The goal for this project is to write everything from scratch, using no outside libraries. Uses sockets and UDP network calls to stream video between you and your teammates using minimal libraries, written in pure Rust
+The goal for this project is to write (almost - writing a codec seems very time intensive, which I prefer not to do. Maybe one day) everything from scratch, using no outside libraries. Uses sockets and UDP network calls to stream video between you and your teammates using minimal libraries, written in pure Rust
 
 Since we should always have the fastest stream, dropping packets is more than ok. Packet ordering happens in O(1) time inserts, for O(n) runtime, where n is the number of packets in a frame
 
